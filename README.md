@@ -20,3 +20,8 @@ git add .
 git commit -m "Estructura inicial del repositorio"
 git push origin main
 ```
+
+## Autor
+
+- Nombre: Juan Echeverri
+- Curso: Análisis de Algoritmos
