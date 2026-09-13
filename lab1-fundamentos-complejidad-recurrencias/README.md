@@ -70,7 +70,7 @@ velocidad divide el tiempo entre dos: devuelve un factor 2 contra un factor
 1.700.000 registros (un 40 % más), el trabajo sube cerca del doble y la ventana
 se rompe otra vez, ya con el contrato firmado. Las mediciones de la Parte 3 le
 ponen número a esto: extrapolando desde n = 6.400, el proceso actual con
-1.200.000 registros se va a unas 4 horas 15 minutos con un lote aleatorio y a
+1.200.000 registros se va a unas 4 horas 13 minutos con un lote aleatorio y a
 más de 8 horas si llega invertido.
 
 El semestre pasado me pasó algo parecido en un proyecto de bases de datos.
@@ -91,12 +91,12 @@ arreglé cambiando de máquina sino indexando los pagos en un diccionario.
 **Dimensión ambiental.** El tiempo de ejecución del proceso nocturno es tiempo
 de CPU al 100 %, y esa CPU consume energía mientras trabaja. La cuenta se puede
 hacer con mis propias mediciones. Extrapolando el escenario A a 1.200.000
-registros, insertion sort necesita unas 4,25 horas de procesador; merge sort,
+registros, insertion sort necesita unas 4,2 horas de procesador; merge sort,
 por la misma vía, queda en el orden de segundos. Si asumo que el servidor
 consume 200 W mientras ordena, cada madrugada el ordenamiento se lleva
-alrededor de 0,85 kWh contra los pocos vatios-hora del otro algoritmo. Visto de
+alrededor de 0,84 kWh contra los pocos vatios-hora del otro algoritmo. Visto de
 a una noche no parece nada, pero el proceso corre todas las madrugadas: son
-unos 310 kWh al año, y la plataforma lleva ocho años en producción. El gasto no
+unos 307 kWh al año, y la plataforma lleva ocho años en producción. El gasto no
 es un pico aislado sino una constante diaria, y además crece con el cuadrado
 del tamaño del lote cada vez que el programa cubre más municipios. Comprar el
 servidor del doble de velocidad empeora la cuenta por los dos lados: una
@@ -192,13 +192,13 @@ entrada, mediana de tres corridas:
 
 | n | A — comparaciones | A — tiempo (ms) | B — comparaciones | B — tiempo (ms) | C — comparaciones | C — tiempo (ms) |
 |---:|---:|---:|---:|---:|---:|---:|
-| 100 | 2.812 | 0,12 | 191 | 0,01 | 4.950 | 0,21 |
-| 200 | 11.016 | 0,44 | 725 | 0,03 | 19.900 | 0,82 |
-| 400 | 41.201 | 1,69 | 2.349 | 0,10 | 79.800 | 3,18 |
-| 800 | 165.575 | 6,72 | 7.075 | 0,30 | 319.600 | 12,97 |
-| 1.600 | 653.348 | 27,18 | 30.534 | 1,30 | 1.279.200 | 52,28 |
-| 3.200 | 2.560.232 | 107,40 | 107.363 | 4,55 | 5.118.400 | 213,84 |
-| 6.400 | 10.279.781 | 435,68 | 387.751 | 16,57 | 20.476.800 | 862,43 |
+| 100 | 2.812 | 0,12 | 173 | 0,01 | 4.950 | 0,20 |
+| 200 | 11.016 | 0,45 | 376 | 0,02 | 19.900 | 0,79 |
+| 400 | 41.201 | 1,71 | 1.877 | 0,08 | 79.800 | 3,18 |
+| 800 | 165.575 | 6,72 | 6.188 | 0,28 | 319.600 | 12,94 |
+| 1.600 | 653.348 | 27,08 | 27.199 | 1,21 | 1.279.200 | 54,36 |
+| 3.200 | 2.560.232 | 107,53 | 94.157 | 4,03 | 5.118.400 | 211,51 |
+| 6.400 | 10.279.781 | 431,47 | 418.398 | 17,99 | 20.476.800 | 860,70 |
 
 ![Comparaciones de insertion sort frente al tamaño de entrada en los tres escenarios](graficas/parte3_comparaciones.png)
 
@@ -207,18 +207,18 @@ entrada, mediana de tres corridas:
 **Qué escenario resultó ser el peor caso.** El C, el de orden inverso. Es la
 curva que queda por encima de todas en las dos gráficas y crece con la misma
 forma que la del escenario A pero al doble de altura. En n = 6.400 hizo
-20.476.800 comparaciones y se tomó 862,43 ms. Ese conteo coincide con el peor
+20.476.800 comparaciones y se tomó 860,70 ms. Ese conteo coincide con el peor
 caso teórico hasta la última cifra: n(n−1)/2 = 6.400 × 6.399 / 2 = 20.476.800.
 No es una aproximación, es el número exacto, y eso confirma que el generador
 está produciendo el peor caso real del algoritmo.
 
 **Cuál resultó el mejor.** El B, el casi ordenado. En la gráfica de
 comparaciones queda pegado al eje horizontal, tan abajo que casi no se
-distingue: en n = 6.400 son 387.751 comparaciones contra 20.476.800 del C, unas
-53 veces menos, y 16,57 ms contra 862,43 ms. Aun así no es el mejor caso
+distingue: en n = 6.400 son 418.398 comparaciones contra 20.476.800 del C, unas
+49 veces menos, y 17,99 ms contra 860,70 ms. Aun así no es el mejor caso
 teórico, que serían 6.399 comparaciones; el 2 % de registros nuevos que se
 anexan al final tiene que atravesar en promedio media lista, y eso da 0,02 × n
-× (0,98n / 2) ≈ 401.000 comparaciones, muy cerca de lo que medí.
+× (0,98n / 2) ≈ 401.000 comparaciones, muy cerca de las 418.398 que medí.
 
 **Cuál se aproxima al caso promedio.** El A, el aleatorio. En n = 6.400 midió
 10.279.781 comparaciones, y el valor esperado bajo el supuesto de permutaciones
@@ -234,7 +234,7 @@ mitad) y los tres conteos cayeron sobre las fórmulas que había escrito. Lo
 esperaba una diferencia grande contra A, pero no que en la gráfica lineal
 quedara prácticamente sobre el eje. También vale anotar que B sigue siendo
 cuadrático, no lineal: al pasar de n = 3.200 a n = 6.400 sus comparaciones se
-multiplicaron por 3,6, no por 2. El crecimiento sigue siendo cuadrático, solo
+multiplicaron por 4,4, no por 2. El crecimiento sigue siendo cuadrático, solo
 que con una constante unas 50 veces más pequeña.
 
 ---
@@ -388,32 +388,32 @@ la Parte 3 y mediana de tres corridas:
 | n | Insertion — comparaciones | Insertion — tiempo (ms) | Merge — comparaciones | Merge — tiempo (ms) |
 |---:|---:|---:|---:|---:|
 | 100 | 2.812 | 0,12 | 545 | 0,08 |
-| 200 | 11.016 | 0,45 | 1.290 | 0,16 |
-| 400 | 41.201 | 1,71 | 2.939 | 0,35 |
-| 800 | 165.575 | 6,76 | 6.721 | 0,76 |
-| 1.600 | 653.348 | 27,30 | 15.084 | 1,62 |
-| 3.200 | 2.560.232 | 107,02 | 33.285 | 3,26 |
-| 6.400 | 10.279.781 | 436,54 | 72.914 | 7,07 |
+| 200 | 11.016 | 0,46 | 1.290 | 0,16 |
+| 400 | 41.201 | 1,75 | 2.939 | 0,34 |
+| 800 | 165.575 | 6,75 | 6.721 | 0,75 |
+| 1.600 | 653.348 | 27,79 | 15.084 | 1,59 |
+| 3.200 | 2.560.232 | 107,67 | 33.285 | 3,27 |
+| 6.400 | 10.279.781 | 453,12 | 72.914 | 7,01 |
 
 ![Tiempo de ejecución de insertion sort y merge sort frente al tamaño de entrada en el escenario A](graficas/parte4_tiempo.png)
 
 **Cuál de los dos algoritmos es mejor para Tamiza, leído en la gráfica.** Merge
 sort. Su curva es la que se ve casi plana sobre el eje horizontal, mientras que
 la de insertion sort se despega desde n = 1.600 y se dispara. En el extremo
-derecho de la gráfica, con n = 6.400, insertion sort marca 436,54 ms y merge
-sort 7,07 ms: 62 veces más rápido en el mismo punto.
+derecho de la gráfica, con n = 6.400, insertion sort marca 453,12 ms y merge
+sort 7,01 ms: 65 veces más rápido en el mismo punto.
 
 Lo que hace cada curva a medida que crece n se ve mejor en los saltos. Cuando
-el tamaño se duplica, el tiempo de insertion sort se multiplica por 4 (107,02
-ms → 436,54 ms es 4,08 veces) y el de merge sort apenas por poco más de 2 (3,26
-ms → 7,07 ms es 2,17 veces). Esa es la diferencia entre las dos curvas: una
+el tamaño se duplica, el tiempo de insertion sort se multiplica por 4 (107,67
+ms → 453,12 ms es 4,21 veces) y el de merge sort apenas por poco más de 2 (3,27
+ms → 7,01 ms es 2,14 veces). Esa es la diferencia entre las dos curvas: una
 crece con el cuadrado del tamaño y la otra casi proporcional al tamaño.
 
 **Coincide con lo calculado en 4.1.** El factor 4 al duplicar n es la firma de
-Θ(n²): si T(n) ≈ kn², entonces T(2n) = 4kn². El factor 2,17 de merge sort es la
+Θ(n²): si T(n) ≈ kn², entonces T(2n) = 4kn². El factor 2,14 de merge sort es la
 firma de Θ(n log n): al duplicar n el tiempo se multiplica por 2 más el pequeño
 aporte del logaritmo, que en este rango predice 2 × (log₂ 6.400 / log₂ 3.200) =
-2,16, prácticamente el 2,17 medido. Los conteos de comparaciones dicen lo mismo
+2,16, prácticamente el 2,14 medido. Los conteos de comparaciones dicen lo mismo
 sin depender de la máquina: 10.279.781 contra 72.914 en n = 6.400.
 
 **Lo que pasa en los tamaños pequeños.** En el extremo izquierdo de la gráfica
@@ -440,29 +440,29 @@ quieren mantener tres implementaciones. Merge sort cuesta lo mismo, del orden
 de n log n, para las tres formas de llegada del lote: parte la lista por la
 mitad sin mirar los valores, así que una migración, un reproceso o un cargue
 directo le cuestan igual. Insertion sort no da esa garantía: en mis mediciones,
-el mismo algoritmo con el mismo tamaño de entrada tarda 16,57 ms con el lote
-casi ordenado y 862,43 ms con el lote invertido (n = 6.400). Son 52 veces de
+el mismo algoritmo con el mismo tamaño de entrada tarda 17,99 ms con el lote
+casi ordenado y 860,70 ms con el lote invertido (n = 6.400). Son 48 veces de
 diferencia decididas por el canal de origen, que es lo que no se controla.
 
 **Estimación para la ventana de cuatro horas.** Aclaro que lo que sigue es una
 estimación, no una medición: el tamaño más grande que medí fue n = 6.400 y de
 ahí extrapolo usando la forma de cada curva. De 6.400 a 1.200.000 el tamaño se
 multiplica por 187,5. Insertion sort crece con el cuadrado, así que su tiempo
-se multiplica por 187,5² ≈ 35.150: los 435,68 ms del escenario aleatorio se
-convierten en unas **4 horas 15 minutos**, y los 862,43 ms del lote invertido
-en unas **8 horas 25 minutos**. Las dos están por fuera de la ventana,
+se multiplica por 187,5² ≈ 35.150: los 431,47 ms del escenario aleatorio se
+convierten en unas **4 horas 13 minutos**, y los 860,70 ms del lote invertido
+en unas **8 horas 24 minutos**. Las dos están por fuera de la ventana,
 consistente con las tres noches en que la lista quedó incompleta. Merge sort
 crece con n log n, así que su factor es (1.200.000 × log₂ 1.200.000) / (6.400 ×
-log₂ 6.400) ≈ 300, y los 7,07 ms se convierten en unos **2 segundos**. Una
+log₂ 6.400) ≈ 300, y los 7,01 ms se convierten en unos **2 segundos**. Una
 prueba suelta con n = 200.000 (844 ms) extrapola más bien a 6 segundos; aun así
 el proceso queda tres órdenes de magnitud por debajo del límite.
 
 **Sobre la compra del servidor del doble de velocidad.** Un servidor del doble
 de velocidad de reloj divide el tiempo entre dos, en el mejor de los casos. La
-brecha que hay que cerrar es de 62 veces: es el dato que tomé en n = 6.400
-sobre el escenario aleatorio, donde insertion sort tarda 436,54 ms y merge sort
-7,07 ms (gráfica `parte4_tiempo.png`). Con la máquina nueva, el proceso actual
-pasaría de unas 4 horas 15 minutos a unas 2 horas 8 minutos en el escenario
+brecha que hay que cerrar es de 65 veces: es el dato que tomé en n = 6.400
+sobre el escenario aleatorio, donde insertion sort tarda 453,12 ms y merge sort
+7,01 ms (gráfica `parte4_tiempo.png`). Con la máquina nueva, el proceso actual
+pasaría de unas 4 horas 13 minutos a unas 2 horas 6 minutos en el escenario
 típico: entra en la ventana por ahora, pero no en el escenario de orden inverso
 (más de 4 horas), y vuelve a salirse en cuanto el lote crezca un 40 %, porque
 el trabajo sube con el cuadrado y el hardware solo aporta un factor fijo. El

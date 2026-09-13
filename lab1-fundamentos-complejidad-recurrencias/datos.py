@@ -35,10 +35,19 @@ def generar_casi_ordenado(n: int, semilla: int = 42) -> list[int]:
         desordenado al final.
     """
     generador = random.Random(semilla)
-    valores = generador.sample(range(n * FACTOR_RANGO), n)
     corte = int(n * 0.98)
-    ordenados = sorted(valores[:corte], reverse=True)
-    nuevos = valores[corte:]
+    # El 98% se construye directamente en orden descendente, restando un
+    # salto aleatorio par: asi queda ordenado sin usar ninguna rutina de
+    # ordenamiento y todos los valores son distintos entre si.
+    valor = n * FACTOR_RANGO
+    ordenados = []
+    for _ in range(corte):
+        valor -= 2 * generador.randint(1, FACTOR_RANGO // 2)
+        ordenados.append(valor)
+    # Los registros nuevos toman valores impares del mismo rango, asi que
+    # no chocan con los anteriores y quedan repartidos por toda la lista.
+    nuevos = generador.sample(range(valor + 1, n * FACTOR_RANGO, 2),
+                              n - corte)
     return ordenados + nuevos
 
 
