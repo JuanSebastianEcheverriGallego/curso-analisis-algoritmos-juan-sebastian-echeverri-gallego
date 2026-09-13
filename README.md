@@ -4,6 +4,7 @@ Repositorio utilizado para el desarrollo de los laboratorios y ejercicios del cu
 
 ## Estructura del repositorio
 
+- **lab1-fundamentos-complejidad-recurrencias/**: Laboratorio 1 — fundamentos, complejidad y recurrencias (informe, código y gráficas).
 - **laboratorios/**: Contendrá los cinco laboratorios evaluativos del semestre.
 - **ejercicios-clase/**: Almacenará los ejercicios realizados durante las sesiones de clase.
 - **benchmarks/**: Incluirá scripts para medir tiempos de ejecución y realizar comparaciones de rendimiento.
