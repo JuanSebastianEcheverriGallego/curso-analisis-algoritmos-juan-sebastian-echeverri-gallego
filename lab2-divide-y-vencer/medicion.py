@@ -7,14 +7,15 @@ entrada, y guarda la grafica en graficas/tiempo_vs_n.png.
 
 import random
 import time
+from collections.abc import Callable
 from statistics import median
 
 import matplotlib.pyplot as plt
 
 from subarreglo import subarreglo_fuerza_bruta, subarreglo_maximo
 
-TAMANOS = [10, 50, 100, 500, 1000, 2000, 4000, 8000, 16000]
-REPETICIONES = 5
+TAMANOS = [10, 20, 30, 40, 50, 100, 500, 1000, 2000, 4000, 8000, 16000]
+REPETICIONES = 7
 SEMILLA = 42
 
 
@@ -33,7 +34,9 @@ def generar_serie(n: int, semilla: int = SEMILLA) -> list[int]:
     return [generador.randint(-100, 100) for _ in range(n)]
 
 
-def medir(funcion, *argumentos) -> tuple[float, tuple[int, int, float]]:
+def medir(
+    funcion: Callable[..., tuple[int, int, float]], *argumentos: object
+) -> tuple[float, tuple[int, int, float]]:
     """Cronometra una de las dos soluciones sobre una serie ya generada.
 
     La serie se construye antes de llamar a esta funcion para que el

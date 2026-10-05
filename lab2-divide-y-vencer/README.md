@@ -72,11 +72,11 @@ Código: [medicion.py](medicion.py).
 
 ![Tiempo de ejecución de fuerza bruta y divide y vencerás frente al tamaño de la serie](graficas/tiempo_vs_n.png)
 
-**Cómo medí.** Nueve tamaños de serie, de 10 a 16.000 días, con valores enteros
+**Cómo medí.** Doce tamaños de serie, de 10 a 16.000 días, con valores enteros
 entre −100 y 100 generados con semilla fija (42). En cada tamaño los dos
 algoritmos reciben **la misma lista**, y el propio script comprueba con un
 `assert` que las dos soluciones devuelven la misma suma antes de registrar el
-tiempo. Cada medición es la **mediana de cinco corridas**, para que un pico del
+tiempo. Cada medición es la **mediana de siete corridas**, para que un pico del
 sistema operativo no mueva el punto. El cronómetro (`time.perf_counter()`)
 encierra únicamente la llamada al algoritmo: la serie se genera antes de
 arrancarlo.
@@ -87,15 +87,18 @@ pequeños:
 
 | n (días) | Fuerza bruta (ms) | Divide y vencerás (ms) |
 |---:|---:|---:|
-| 10 | 0,0027 | 0,0048 |
-| 50 | 0,0408 | 0,0292 |
-| 100 | 0,1547 | 0,0618 |
-| 500 | 4,0163 | 0,3594 |
-| 1.000 | 15,7666 | 0,7654 |
-| 2.000 | 64,8041 | 1,6035 |
-| 4.000 | 264,8269 | 3,3686 |
-| 8.000 | 1.057,0678 | 7,0417 |
-| 16.000 | 4.232,6862 | 14,7222 |
+| 10 | 0,0024 | 0,0047 |
+| 20 | 0,0073 | 0,0104 |
+| 30 | 0,0153 | 0,0163 |
+| 40 | 0,0262 | 0,0224 |
+| 50 | 0,0406 | 0,0291 |
+| 100 | 0,1532 | 0,0616 |
+| 500 | 3,8640 | 0,3600 |
+| 1.000 | 15,5042 | 0,7614 |
+| 2.000 | 62,5635 | 1,6041 |
+| 4.000 | 252,8416 | 3,3411 |
+| 8.000 | 1.039,2589 | 7,1357 |
+| 16.000 | 4.207,1861 | 14,5421 |
 
 ---
 
@@ -115,53 +118,52 @@ n^(log_b a), y aquí f(n) = Θ(n) = Θ(n^(log_b a)): se cumple. Concluye
 T(n) = Θ(n^(log_b a) · log n) = **Θ(n log n)**.
 
 La fuerza bruta es Θ(n²) porque evalúa los n(n+1)/2 pares de días y, como la
-suma se acumula dentro del ciclo en vez de recalcularse, cada par cuesta una
-suma y una comparación.
+suma se acumula dentro del ciclo, cada par cuesta una suma y una comparación.
 
 ### 2. Lo medido contra lo esperado
 
 En la gráfica la fuerza bruta se mantiene casi pegada al eje hasta n = 2.000 y
 desde ahí se dispara con curvatura creciente; divide y vencerás no se despega
 del eje en toda la escala. Tomando los dos últimos tamaños, que son
-consecutivos y duplican n: la fuerza bruta pasa de 1.057,07 ms a 4.232,69 ms, se
-multiplicó por **4,00**; divide y vencerás pasa de 7,04 ms a 14,72 ms, se
-multiplicó por **2,09**. Θ(n²) predice exactamente ×4 al duplicar n, y
-Θ(n log n) predice 2 × (log₂ 16.000 / log₂ 8.000) = 2,15. Lo medido coincide
-con lo esperado en los dos casos.
+consecutivos y duplican n: la fuerza bruta pasa de 1.039,26 ms a 4.207,19 ms, se
+multiplicó por **4,05**; divide y vencerás pasa de 7,14 ms a 14,54 ms, se
+multiplicó por **2,04**. Θ(n²) predice exactamente ×4 al duplicar n, y
+Θ(n log n) predice 2 × (log₂ 16.000 / log₂ 8.000) = 2,15. Los dos coinciden; el
+2,04 queda algo por debajo del 2,15, dentro del ruido de medir milisegundos.
 
 ### 3. Tamaños pequeños
 
 Sí hay un tamaño desde el cual divide y vencerás empieza a ganar, y está
-**entre 30 y 40 días**. Midiendo en ese rango, con n = 30 la fuerza bruta
-todavía gana (15,2 µs contra 16,2 µs) y con n = 40 ya pierde (25,7 µs contra
-22,7 µs).
-En la tabla se ve el mismo cruce entre las dos primeras filas: con n = 10 la
-fuerza bruta es casi el doble de rápida y con n = 50 ya es 1,4 veces más lenta.
-El motivo es que divide y vencerás paga llamadas recursivas y creación de tuplas
-en cada nivel, mientras la fuerza bruta son dos ciclos sin nada alrededor. Esas
-constantes pesan más que la ventaja asintótica mientras n sea chico.
+**entre 30 y 40 días**. En la tabla, con n = 30 la fuerza bruta todavía gana
+(0,0153 ms contra 0,0163 ms) y con n = 40 ya pierde (0,0262 ms contra
+0,0224 ms). Antes del cruce la fuerza bruta gana con holgura: con n = 10 es casi
+el doble de rápida. El motivo es que divide y
+vencerás paga llamadas recursivas y creación de tuplas en cada nivel, mientras
+la fuerza bruta son dos ciclos sin nada alrededor; esas constantes pesan más que
+la ventaja asintótica mientras n sea chico. Medí a propósito en 20, 30 y 40
+días, porque con los tamaños grandes el cruce no se alcanza a ver.
 
 ### 4. ¿Cuándo conviene dividir?
 
 Para hallar el máximo de n números, dividir no mejora nada. La recurrencia sería
 `T(n) = 2T(n/2) + Θ(1)`, porque combinar es una sola comparación entre los dos
-máximos parciales. Por el método maestro, con a = 2, b = 2 y f(n) = Θ(1), se
-tiene n^(log_b a) = n y f(n) = O(n^(1−ε)): aplica el primer caso y
-T(n) = Θ(n), lo mismo que recorrer el arreglo una vez, pero con el costo extra
-de la recursión. Dividir aporta cuando combinar cuesta menos que lo que se
-ahorra al no resolver el problema completo: en el subarreglo máximo se pasa de
+máximos parciales. Por el método maestro, con a = 2, b = 2 y f(n) = Θ(1),
+n^(log_b a) = n y f(n) = O(n^(1−ε)): aplica el primer caso y T(n) = Θ(n), lo
+mismo que recorrerlo una vez, pero con el costo extra de la recursión. Dividir
+aporta cuando combinar cuesta menos que lo que se ahorra al no resolver el
+problema completo: en el subarreglo máximo se pasa de
 Θ(n²) a Θ(n log n) porque combinar cuesta solo Θ(n). En el máximo no hay nada
 que ahorrar: ya hay que mirar los n números una vez y ese es el piso.
 
 ### 5. Concepto para la gerente
 
 Recomiendo divide y vencerás. Con las series actuales de 2.000 días la
-diferencia es de milisegundos, pero para las series de sensores el algoritmo de
-fuerza bruta no sirve. **Lo que sigue es una estimación, no una medición:**
-extrapolo desde n = 16.000, que es el tamaño más grande que medí, usando la
-forma de cada curva y no una regla de tres, porque la relación no es lineal. De
+diferencia es de milisegundos, pero para las series de sensores la fuerza bruta
+no sirve. **Lo que sigue es una estimación, no una medición:**
+extrapolo desde n = 16.000, el tamaño más grande que medí, usando la forma de
+cada curva y no una regla de tres, porque la relación no es lineal. De
 16.000 a 1.000.000 el tamaño se multiplica por 62,5. La fuerza bruta crece con
-el cuadrado, así que su tiempo se multiplica por 62,5² ≈ 3.900: los 4.232,69 ms
-se vuelven unas **4 horas 35 minutos**. Divide y vencerás crece con n log n, así
+el cuadrado, así que su tiempo se multiplica por 62,5² ≈ 3.900: los 4.207,19 ms
+se vuelven unas **4 horas 34 minutos**. Divide y vencerás crece con n log n, así
 que su factor es (1.000.000 × log₂ 1.000.000) / (16.000 × log₂ 16.000) ≈ 89: los
-14,72 ms se vuelven **1,3 segundos**.
+14,54 ms se vuelven **1,3 segundos**.
