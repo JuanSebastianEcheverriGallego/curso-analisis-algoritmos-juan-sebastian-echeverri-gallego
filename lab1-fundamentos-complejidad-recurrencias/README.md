@@ -26,11 +26,17 @@ Ya con el entorno activo, parado en la carpeta de este laboratorio:
 ```bash
 cd lab1-fundamentos-complejidad-recurrencias
 python parte3_casos.py         # tabla de la Parte 3 y sus dos gráficas
-python parte4_complejidad.py   # tabla de la Parte 4 y su gráfica
+python parte4_complejidad.py   # tabla de la Parte 4, su gráfica y las
+                               # comprobaciones complementarias
 ```
 
 Cada script imprime en consola las mismas cifras de las tablas de este informe
-y escribe sus imágenes en `graficas/`. Los generadores reciben una semilla fija
+y escribe sus imágenes en `graficas/`. Además de la tabla comparativa,
+`parte4_complejidad.py` imprime al final las cuatro comprobaciones puntuales
+que se citan en el informe y que no caben en una gráfica: el conteo del mejor
+caso de insertion sort, el cruce entre los dos algoritmos en tamaños menores
+que 100, una corrida de control de merge sort con 200.000 registros y su pico
+de memoria medido con `tracemalloc`. Los generadores reciben una semilla fija
 (42), así que el conteo de comparaciones se repite exactamente en cualquier
 máquina; los tiempos sí cambian unos milisegundos entre corridas.
 
@@ -357,8 +363,9 @@ con A y B constantes. Todo el comportamiento está en las dos sumatorias:
 - **Mejor caso** (lista ya de mayor a menor): ningún elemento se mueve, d_i = 0
   y c_i = 1 para toda iteración. Entonces Σd_i = 0 y Σc_i = n − 1, y queda
   T(n) = A·n + B + (c₇ + c₈)(n − 1), un polinomio de grado 1: **Θ(n)**. Son
-  exactamente n − 1 comparaciones; lo comprobé pasándole a `insertion_sort` una
-  lista de 100 elementos ya ordenada de mayor a menor, que devolvió 99.
+  exactamente n − 1 comparaciones; `parte4_complejidad.py` lo comprueba
+  pasándole a `insertion_sort` una lista de 100 elementos ya ordenada de mayor
+  a menor, que devuelve 99.
 - **Peor caso** (lista de menor a mayor): cada clave atraviesa todo lo ordenado,
   d_i = c_i = i. Entonces Σd_i = Σc_i = n(n−1)/2, y el término dominante es
   n²/2 multiplicado por una constante: **Θ(n²)**.
@@ -387,33 +394,33 @@ la Parte 3 y mediana de tres corridas:
 
 | n | Insertion — comparaciones | Insertion — tiempo (ms) | Merge — comparaciones | Merge — tiempo (ms) |
 |---:|---:|---:|---:|---:|
-| 100 | 2.812 | 0,12 | 545 | 0,08 |
-| 200 | 11.016 | 0,46 | 1.290 | 0,16 |
-| 400 | 41.201 | 1,75 | 2.939 | 0,34 |
-| 800 | 165.575 | 6,75 | 6.721 | 0,75 |
-| 1.600 | 653.348 | 27,79 | 15.084 | 1,59 |
-| 3.200 | 2.560.232 | 107,67 | 33.285 | 3,27 |
-| 6.400 | 10.279.781 | 453,12 | 72.914 | 7,01 |
+| 100 | 2.812 | 0,13 | 545 | 0,08 |
+| 200 | 11.016 | 0,53 | 1.290 | 0,17 |
+| 400 | 41.201 | 1,65 | 2.939 | 0,37 |
+| 800 | 165.575 | 6,99 | 6.721 | 0,84 |
+| 1.600 | 653.348 | 29,36 | 15.084 | 1,95 |
+| 3.200 | 2.560.232 | 113,53 | 33.285 | 3,59 |
+| 6.400 | 10.279.781 | 464,72 | 72.914 | 7,22 |
 
 ![Tiempo de ejecución de insertion sort y merge sort frente al tamaño de entrada en el escenario A](graficas/parte4_tiempo.png)
 
 **Cuál de los dos algoritmos es mejor para Tamiza, leído en la gráfica.** Merge
 sort. Su curva es la que se ve casi plana sobre el eje horizontal, mientras que
 la de insertion sort se despega desde n = 1.600 y se dispara. En el extremo
-derecho de la gráfica, con n = 6.400, insertion sort marca 453,12 ms y merge
-sort 7,01 ms: 65 veces más rápido en el mismo punto.
+derecho de la gráfica, con n = 6.400, insertion sort marca 464,72 ms y merge
+sort 7,22 ms: 64 veces más rápido en el mismo punto.
 
 Lo que hace cada curva a medida que crece n se ve mejor en los saltos. Cuando
-el tamaño se duplica, el tiempo de insertion sort se multiplica por 4 (107,67
-ms → 453,12 ms es 4,21 veces) y el de merge sort apenas por poco más de 2 (3,27
-ms → 7,01 ms es 2,14 veces). Esa es la diferencia entre las dos curvas: una
+el tamaño se duplica, el tiempo de insertion sort se multiplica por 4 (113,53
+ms → 464,72 ms es 4,09 veces) y el de merge sort apenas por poco más de 2 (3,59
+ms → 7,22 ms es 2,01 veces). Esa es la diferencia entre las dos curvas: una
 crece con el cuadrado del tamaño y la otra casi proporcional al tamaño.
 
 **Coincide con lo calculado en 4.1.** El factor 4 al duplicar n es la firma de
-Θ(n²): si T(n) ≈ kn², entonces T(2n) = 4kn². El factor 2,14 de merge sort es la
+Θ(n²): si T(n) ≈ kn², entonces T(2n) = 4kn². El factor 2,01 de merge sort es la
 firma de Θ(n log n): al duplicar n el tiempo se multiplica por 2 más el pequeño
 aporte del logaritmo, que en este rango predice 2 × (log₂ 6.400 / log₂ 3.200) =
-2,16, prácticamente el 2,14 medido. Los conteos de comparaciones dicen lo mismo
+2,16, cerca del 2,01 medido. Los conteos de comparaciones dicen lo mismo
 sin depender de la máquina: 10.279.781 contra 72.914 en n = 6.400.
 
 **Lo que pasa en los tamaños pequeños.** En el extremo izquierdo de la gráfica
@@ -421,8 +428,9 @@ las dos curvas están pegadas y la ventaja de merge sort casi no existe: en n =
 100 son 0,12 ms contra 0,08 ms. Ahí las constantes pesan más que el orden de
 crecimiento, porque merge sort paga por crear listas nuevas en cada nivel y por
 las llamadas recursivas, mientras insertion sort trabaja sobre un solo arreglo.
-Midiendo por debajo de n = 100 se ve el cruce: hasta unos 50 elementos
-insertion sort es más rápido, y alrededor de n = 60 las dos curvas se cortan.
+`parte4_complejidad.py` mide además los tamaños por debajo de n = 100 y ahí se
+ve el cruce: insertion sort gana hasta n = 60 (41,3 µs contra 42,3 µs) y en
+n = 80 merge sort ya es más rápido (65,1 µs contra 71,2 µs).
 Es el comportamiento esperado, no un error de implementación: la ventaja
 asintótica solo se nota cuando n es grande, y para el tamaño que le interesa a
 Tamiza (1.200.000) estamos muchísimo más allá de ese cruce.
@@ -453,15 +461,16 @@ convierten en unas **4 horas 13 minutos**, y los 860,70 ms del lote invertido
 en unas **8 horas 24 minutos**. Las dos están por fuera de la ventana,
 consistente con las tres noches en que la lista quedó incompleta. Merge sort
 crece con n log n, así que su factor es (1.200.000 × log₂ 1.200.000) / (6.400 ×
-log₂ 6.400) ≈ 300, y los 7,01 ms se convierten en unos **2 segundos**. Una
-prueba suelta con n = 200.000 (844 ms) extrapola más bien a 6 segundos; aun así
-el proceso queda tres órdenes de magnitud por debajo del límite.
+log₂ 6.400) ≈ 300, y los 7,22 ms se convierten en unos **2 segundos**. La
+corrida de control con n = 200.000 que imprime `parte4_complejidad.py`
+(377,7 ms) extrapola a 2,6 segundos por el mismo camino, así que las dos vías coinciden en
+el orden de magnitud.
 
 **Sobre la compra del servidor del doble de velocidad.** Un servidor del doble
 de velocidad de reloj divide el tiempo entre dos, en el mejor de los casos. La
-brecha que hay que cerrar es de 65 veces: es el dato que tomé en n = 6.400
-sobre el escenario aleatorio, donde insertion sort tarda 453,12 ms y merge sort
-7,01 ms (gráfica `parte4_tiempo.png`). Con la máquina nueva, el proceso actual
+brecha que hay que cerrar es de 64 veces: es el dato que tomé en n = 6.400
+sobre el escenario aleatorio, donde insertion sort tarda 464,72 ms y merge sort
+7,22 ms (gráfica `parte4_tiempo.png`). Con la máquina nueva, el proceso actual
 pasaría de unas 4 horas 13 minutos a unas 2 horas 6 minutos en el escenario
 típico: entra en la ventana por ahora, pero no en el escenario de orden inverso
 (más de 4 horas), y vuelve a salirse en cuanto el lote crezca un 40 %, porque
@@ -469,8 +478,9 @@ el trabajo sube con el cuadrado y el hardware solo aporta un factor fijo. El
 cambio de algoritmo no cuesta hardware y deja margen para años de crecimiento.
 
 **Una consideración distinta del tiempo.** Merge sort usa memoria adicional
-porque construye listas nuevas al mezclar. Lo medí con `tracemalloc`: para n =
-100.000 el pico extra fue de 3,1 MB, que extrapolado a 1.200.000 registros da
+porque construye listas nuevas al mezclar. `parte4_complejidad.py` lo mide con
+`tracemalloc`: para n = 100.000 el pico extra es de 3,1 MB, que extrapolado a
+1.200.000 registros da
 unos 37 MB sobre la lista original. Para un servidor de este tipo es
 despreciable frente a las horas de CPU que ahorra, pero conviene dejarlo
 escrito antes de dimensionar la máquina. La mezcla implementada además es
