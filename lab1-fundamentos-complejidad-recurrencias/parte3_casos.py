@@ -6,6 +6,7 @@ las dos graficas de la carpeta graficas/.
 """
 
 import time
+from collections.abc import Callable
 from statistics import median
 
 import matplotlib.pyplot as plt
@@ -24,7 +25,9 @@ ESCENARIOS = [
 ]
 
 
-def generar_lote(generador, n: int) -> list[int]:
+def generar_lote(
+    generador: Callable[..., list[int]], n: int
+) -> list[int]:
     """Construye el lote de un escenario respetando la firma del generador.
 
     Args:
@@ -85,8 +88,8 @@ def correr_experimento() -> dict[str, dict[str, list[float]]]:
     return resultados
 
 
-def graficar(resultados: dict, clave: str, titulo: str, eje_y: str,
-             archivo: str) -> None:
+def graficar(resultados: dict[str, dict[str, list[float]]], clave: str,
+             titulo: str, eje_y: str, archivo: str) -> None:
     """Dibuja una metrica de los tres escenarios en los mismos ejes.
 
     Args:

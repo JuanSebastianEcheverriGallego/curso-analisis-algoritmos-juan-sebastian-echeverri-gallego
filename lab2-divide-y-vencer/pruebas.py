@@ -6,7 +6,7 @@ from subarreglo import (subarreglo_fuerza_bruta, subarreglo_maximo,
                         suma_cruzada)
 
 
-def suma_del_tramo(valores, inicio, fin):
+def suma_del_tramo(valores: list[float], inicio: int, fin: int) -> float:
     # Suma directa del tramo, para comprobar que los indices devueltos
     # corresponden a la suma devuelta.
     total = 0.0
@@ -15,7 +15,7 @@ def suma_del_tramo(valores, inicio, fin):
     return total
 
 
-def revisar(serie, esperado=None):
+def revisar(serie: list[float], esperado: float | None = None) -> float:
     copia = list(serie)
     bruta = subarreglo_fuerza_bruta(serie)
     dyv = subarreglo_maximo(serie, 0, len(serie) - 1)
